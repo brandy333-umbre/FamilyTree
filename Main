@@ -1,0 +1,402 @@
+class Person:
+    def __init__(self, name, surname, age, birth_month, birth_year, country, spouse=None, mother=None, father=None, death_year=None):
+        self.name = name
+        self.surname = surname
+        self.age = age
+        self.birth_month = birth_month
+        self.birth_year = birth_year
+        self.country = country
+        self.spouse = spouse
+        self.mother = mother
+        self.father = father
+        self.children = []
+        self.death_year = death_year
+
+    #Add a child
+    def add_children(self, child):
+        self.children.append(child)
+
+    #Find and return relation details
+    def find_relation(self, relation):
+        relations = {
+            "mother": self.mother,
+            "father": self.father,
+            "children": self.children,
+            "spouse": self.spouse,
+        }
+        related_person = relations.get(relation.lower())
+        if isinstance(related_person, list):
+            return "\n".join([child.person_details() for child in related_person]) if related_person else "No children found."
+        return related_person.person_details() if related_person else f"{relation.capitalize()}: Not found."
+
+    #Return person's details as a formatted string
+    def person_details(self):
+        life_status = f"{self.birth_year} - {self.death_year}" if self.death_year else f"Born: {self.birth_year}"
+        age_info = "Deceased" if self.death_year else f"{self.age} years old"
+        return f"Name: {self.name} {self.surname}\nAge: {age_info}\n{life_status}\nCountry: {self.country}\n"
+
+
+class GrandParentChild(Person):
+    def __init__(self, name, surname, age, birth_month, birth_year, country, spouse=None, mother=None, father=None, death_year=None):
+        super().__init__(name, surname, age, birth_month, birth_year, country, spouse, mother, father, death_year)
+        self.grandchildren = []
+        self.grandparents = []
+        self.siblings = []
+
+    #Add grandchildren
+    def add_grandchild(self, grandchildren):
+        for grandchild in grandchildren:
+            if grandchild not in self.grandchildren:
+                self.grandchildren.append(grandchild)
+                grandchild.grandparents.append(self)
+
+    def get_grandchildren(self):
+        return self.grandchildren
+
+    #Add grandparents
+    def add_grandparent(self, grandparent):
+        if grandparent not in self.grandparents:
+            self.grandparents.append(grandparent)
+            grandparent.grandchildren.append(self)
+
+    def get_grandparents(self):
+        return self.grandparents
+
+    #Add siblings
+    def add_sibling(self, sibling):
+        if sibling not in self.siblings:
+            self.siblings.append(sibling)
+            sibling.siblings.append(self)
+
+    def get_siblings(self):
+        return self.siblings
+
+    #Calculate average children per person
+    def average_children_per_person(persons):
+        total_children = sum(len(person.children) for person in persons)
+        return total_children / len(persons) if persons else 0
+
+#Data of our family tree
+henri = GrandParentChild("Henri", "Forster", 75, "20 May", 1948, "France", death_year=2023)
+genevieve = GrandParentChild("Genevieve", "Forster", 72, "13 March", 1951, "England")
+charles = GrandParentChild("Charles", "Forster", 70, "19 July", 1953, "France")
+isabelle = GrandParentChild("Isabelle", "Forster", 68, "2 November", 1955, "England")
+laura = GrandParentChild("Laura", "Johnson", 48, " 9August", 1975, "France")
+henry_johnson = GrandParentChild("Henry", "Johnson", 49, " 23 February", 1974, "United States")
+arthur = GrandParentChild("Arthur", "Forster", 50, " 24 January", 1973, "United States")
+gabriel = GrandParentChild("Gabriel", "Forster", 42, " 29 October", 1981, "United States")
+camille = GrandParentChild("Camille", "Forster", 39, "26 April", 1984, "France")
+jasper = GrandParentChild("Jasper", "Swift", 65, "1 June", 1958, "Netherlands")
+anouk = GrandParentChild("Anouk", "Swift", 63, "12 February", 1960, "Netherlands")
+elise = GrandParentChild("Elise", "Swift", 36, " 5 September", 1987, "Netherlands")
+carlos = GrandParentChild("Carlos", "Martinez", 55, "15 December", 1968, "United States", death_year=1990)
+sofia = GrandParentChild("Sofia", "Martinez", 52, "12 May", 1971, "Spain")
+natalia = GrandParentChild("Natalia", "Martinez", 25, "1 January", 1998, "United States")
+diego = GrandParentChild("Diego", "Martinez", 22, "20 April", 2001, "United States")
+finn = GrandParentChild("Finn", "Forster", 14, "16 July", 2009, "Netherlands")
+noor = GrandParentChild("Noor", "Forster", 11, "30 December", 2012, "Netherlands")
+bram = GrandParentChild("Bram", "Forster", 8, "11 March", 2015, "United States")
+luc = GrandParentChild("Luc", "Forster", 15, "7 November", 2008, "United States")
+thomas = GrandParentChild("Thomas", "Forster", 12, "19 September", 2011, "United States")
+emily = GrandParentChild("Emily", "Martinez", 24, "26 July", 1999, "United States")
+ryan = GrandParentChild("Ryan", "Johnson", 22, "12 June", 2001, "United States", death_year=2020)
+marc = GrandParentChild("Marc", "Forster", 36, "14 October", 1988, "United States")
+
+
+#Add child to each person
+henri.add_children(charles)
+genevieve.add_children(charles)
+henri.add_children(laura)
+genevieve.add_children(laura)
+
+charles.add_children(arthur)
+isabelle.add_children(arthur)
+charles.add_children(gabriel)
+isabelle.add_children(gabriel)
+charles.add_children(camille)
+isabelle.add_children(camille)
+
+laura.add_children(emily)
+henry_johnson.add_children(emily)
+laura.add_children(ryan)
+henry_johnson.add_children(ryan)
+
+arthur.add_children(luc)
+arthur.add_children(thomas)
+
+gabriel.add_children(finn)
+elise.add_children(finn)
+gabriel.add_children(noor)
+elise.add_children(noor)
+
+camille.add_children(bram)
+marc.add_children(bram)
+
+jasper.add_children(elise)
+anouk.add_children(elise)
+
+carlos.add_children(natalia)
+sofia.add_children(natalia)
+carlos.add_children(diego)
+sofia.add_children(diego)
+
+#Add grandchildren
+henri.add_grandchild([arthur, camille, gabriel, emily, ryan])
+genevieve.add_grandchild([arthur, camille, gabriel, emily, ryan])
+charles.add_grandchild([luc, thomas, finn, noor, bram])
+isabelle.add_grandchild([luc, thomas, finn, noor, bram])
+jasper.add_grandchild([finn, noor])
+anouk.add_grandchild([finn, noor])
+
+#Add grandparent
+arthur.add_grandparent(henri)
+arthur.add_grandparent(genevieve)
+camille.add_grandparent(henri)
+camille.add_grandparent(genevieve)
+gabriel.add_grandparent(henri)
+gabriel.add_grandparent(genevieve)
+luc.add_grandparent(charles)
+luc.add_grandparent(isabelle)
+thomas.add_grandparent(charles)
+thomas.add_grandparent(isabelle)
+emily.add_grandparent(henri)
+emily.add_grandparent(genevieve)
+ryan.add_grandparent(henri)
+ryan.add_grandparent(genevieve)
+finn.add_grandparent(charles)
+finn.add_grandparent(isabelle)
+noor.add_grandparent(charles)
+noor.add_grandparent(isabelle)
+finn.add_grandparent(jasper)
+finn.add_grandparent(anouk)
+noor.add_grandparent(jasper)
+noor.add_grandparent(anouk)
+bram.add_grandparent(charles)
+bram.add_grandparent(isabelle)
+
+
+#Addinng siblings to each person
+laura.add_sibling(charles)
+charles.add_sibling(laura)
+gabriel.add_sibling(arthur)
+gabriel.add_sibling(camille)
+camille.add_sibling(arthur)
+camille.add_sibling(gabriel)
+ryan.add_sibling(emily)
+emily.add_sibling(ryan)
+thomas.add_sibling(luc)
+luc.add_sibling(thomas)
+noor.add_sibling(finn)
+finn.add_sibling(noor)
+arthur.add_sibling(gabriel)
+arthur.add_sibling(camille)
+diego.add_sibling(natalia)
+natalia.add_sibling(diego)
+
+#Adding mothers and fathers to everyone
+arthur.father = charles
+arthur.mother = isabelle
+gabriel.father = charles
+gabriel.mother = isabelle
+camille.father = charles
+camille.mother = isabelle
+emily.mother = laura
+emily.father = henry_johnson
+ryan.mother = laura
+ryan.father = henry_johnson
+luc.father = arthur
+thomas.father = arthur
+finn.father = gabriel
+finn.mother = elise
+noor.father = gabriel
+noor.mother = elise
+bram.father = camille
+bram.mother = elise
+diego.mother = sofia
+diego.father = carlos
+
+#Set up spouses relations
+charles.spouse = isabelle
+isabelle.spouse = charles
+
+henri.spouse = genevieve
+genevieve.spouse = henri
+
+jasper.spouse = anouk
+anouk.spouse = jasper
+
+carlos.spouse = sofia
+sofia.spouse = carlos
+
+emily.spouse = diego
+diego.spouse = emily
+
+marc.spouse = camille
+camille.spouse = marc
+
+henry_johnson.spouse = laura
+laura.spouse = henry_johnson
+
+#List of all persons
+persons = [henri, genevieve, charles, isabelle, laura, henry_johnson, arthur, gabriel, camille, jasper, anouk, elise, carlos, sofia, natalia, diego, finn, noor, bram, luc, thomas, emily, ryan, marc]
+
+
+#Generate extended family details
+def extended_family(person):
+    aunts_uncles = [sibling for parent in [person.mother, person.father] if parent for sibling in parent.siblings]
+    cousins = [child for aunt_uncle in aunts_uncles for child in aunt_uncle.children]
+
+    return {"Mother": person.mother,
+        "Father": person.father,
+        "Siblings": person.get_siblings(),
+        "Grandparents": person.get_grandparents(),
+        "Grandchildren": person.get_grandchildren(),
+        "Aunts and Uncles": aunts_uncles,
+        "Cousins": cousins,}
+
+
+#Find cousins
+def find_cousins(person):
+    cousins = []
+    for parent in [person.mother, person.father]:
+        if parent:
+            cousins.extend([child for sibling in parent.siblings for child in sibling.children])
+    return cousins
+
+
+#Display all birthdays
+def show_all_birthdays(persons):
+    print("\nList of All Birthdays:")
+    for person in persons:
+        print(f"{person.name} {person.surname}: {person.birth_month} {person.birth_year}")
+
+
+# Calculate average age of death
+def average_age_of_death(persons):
+    death = [person for person in persons if person.death_year]
+    if not death:
+        return "No any deceased in the family tree."
+    total_age = sum(person.death_year - person.birth_year for person in death)
+    return f"\nThe average age of death is {total_age / len(death):.2f} years."
+
+# Updated ask_for_family function with option 14
+def ask_for_family(persons):
+    while True:
+        name = input("\nEnter a person's first name (or type EXIT to get out):").strip()
+        if name.lower() == "exit":
+            print("Goodbye!")
+            break
+
+        # Find the person by name
+        person = next((p for p in persons if p.name.lower() == name.lower()), None)
+        if not person:
+            print("Person not found in the family tree.")
+            continue
+
+        # After you type name show all menu with options
+        print(f"\nDetails for {person.name} {person.surname}:")
+        print(person.person_details())
+        print("Options:")
+        print("1. Mother\n2. Father\n3. Children\n4. Spouse\n5. Siblings\n6. Grandchildren")
+        print("7. Grandparents\n8. Extended Family\n9. Immediate Family\n10. Cousins")
+        print("11. Show Birthdays\n12. Average Children\n13. Average Age at Death\n14. Exit")
+
+        while True:
+            choice = input("Choose an option (1-14): ").strip()
+
+            if choice == "1":
+                print("\nMother:")
+                print(person.find_relation("mother"))
+            elif choice == "2":
+                print("\nFather:")
+                print(person.find_relation("father"))
+            elif choice == "3":
+                children = person.find_relation("children")
+                if children == "No children found.":
+                    print(children)
+                else:
+                    # Count children in the list
+                    child_list = person.children
+                    print(f"Number of children: {len(child_list)}")
+                    for child in child_list:
+                        print(child.person_details())
+            elif choice == "4":
+                print("\nSpouse:")
+                print(person.find_relation("spouse"))
+            elif choice == "5":
+                siblings = person.get_siblings()
+                print("\nSiblings:")
+                if siblings:
+                    for sibling in siblings:
+                        print(f"- {sibling.name} {sibling.surname}")
+                else:
+                    print("No siblings found.")
+            elif choice == "6":
+                grandchildren = person.get_grandchildren()
+                print("\nGrandchildren:")
+                if grandchildren:
+                    for grandchild in grandchildren:
+                        print(f"- {grandchild.name} {grandchild.surname}")
+                else:
+                    print("No grandchildren found.")
+            elif choice == "7":
+                grandparents = person.get_grandparents()
+                print("\nGrandparents:")
+                if grandparents:
+                    for grandparent in grandparents:
+                        print(f"- {grandparent.name} {grandparent.surname}")
+                else:
+                    print("No grandparents found.")
+            elif choice == "8":
+                family = extended_family(person)
+                print("\nExtended Family:")
+                for relation, members in family.items():
+                    if members:
+                        if isinstance(members, list):
+                            for member in members:
+                                print(f"- {relation}: {member.name} {member.surname}")
+                        else:
+                            print(f"- {relation}: {members.name} {members.surname}")
+                    else:
+                        print(f"{relation}: None")
+            elif choice == "9":
+                immediate = {"Mother": person.mother,
+                             "Father": person.father,
+                             "Spouse": person.spouse,
+                             "Children": person.children}
+                print("\nImmediate Family:")
+                for relation, member in immediate.items():
+                    if member:
+                        if isinstance(member, list):
+                            for m in member:
+                                print(f"{relation}: {m.name} {m.surname}")
+                        else:
+                            print(f"{relation}: {member.name} {member.surname}")
+                    else:
+                        print(f"{relation}: None")
+            elif choice == "10":
+                cousins = find_cousins(person)
+                print("\nCousins:")
+                if cousins:
+                    for cousin in cousins:
+                        print(f"- {cousin.name} {cousin.surname}")
+                else:
+                    print("No cousins found.")
+            elif choice == "11":
+                show_all_birthdays(persons)
+            elif choice == "12":
+                average_children = GrandParentChild.average_children_per_person(persons)
+                print(f"\nAverage number of children per person: {average_children:.2f}")
+            elif choice == "13":
+                print(average_age_of_death(persons))
+            elif choice == "14":
+                print("Going back to the main menu...")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+ask_for_family(persons)
+
+
+
+ 
